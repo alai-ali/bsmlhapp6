@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BSMLH</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ЗАСТАВКА -->
+<div id="splash">
+  <div class="s-logo">🛡️</div>
+  <div class="s-title">BSMLH</div>
+  <div class="s-sub">Biometric Security Multifunction Ledger for Humanity</div>
+</div>
+
+<!-- РЕГИСТРАЦИЯ -->
+<div id="scr-reg" class="screen active">
+  <div class="lang-btn" onclick="toggleLang()">🌐
+    <div id="lang-menu" class="lang-menu">
+      <div onclick="setLang('RU')">Русский</div>
+      <div onclick="setLang('EN')">English</div>
+      <div onclick="setLang('KZ')">Қазақша</div>
+    </div>
+  </div>
+  <div class="reg-logo">🛡️</div>
+  <h2 id="reg-title">РЕГИСТРАЦИЯ</h2>
+  <input id="inp-name" class="inp" type="text" placeholder="Имя и фамилия">
+  <button class="btn-gold" onclick="startCam()">ДАЛЕЕ →</button>
+</div>
+
+<!-- КАМЕРА -->
+<div id="scr-cam" class="screen">
+  <p class="hint">Смотрите в камеру</p>
+  <video id="video" autoplay playsinline></video>
+  <button class="btn-gold" onclick="takePhoto()">📸 СФОТОГРАФИРОВАТЬ</button>
+  <canvas id="canvas" style="display:none"></canvas>
+</div>
+
+<!-- NFC -->
+<div id="scr-nfc" class="screen">
+  <div class="nfc-ring"><div class="nfc-scan"></div>🛡️</div>
+  <h3 id="nfc-status"> </h3>
+  <button class="btn-gold" onclick="activateNFC()">АКТИВИРОВАТЬ NFC</button>
+  <div class="skip-link" onclick="toApp()">Войти без чипа</div>
+</div>
+
+<!-- ПРИЛОЖЕНИЕ -->
+<div id="app">
+
+  <header>
+    <span id="hdr-title">BSMLH</span>
+  </header>
+
+  <div id="content">
+
+    <!-- ЧАТ -->
+    <div id="tab-chat" class="tab-view">
+      <div id="chat-list"></div>
+    </div>
+
+    <!-- КАРТЫ -->
+    <div id="tab-maps" class="tab-view" style="display:none">
+      <iframe src="https://maps.google.com/maps?output=embed" loading="lazy"></iframe>
+    </div>
+
+    <!-- HUB -->
+    <div id="tab-hub" class="tab-view" style="display:none">
+      <div class="patent-btn" onclick="openPage('pg-patent')">🛠 ПАТЕНТНАЯ МАСТЕРСКАЯ</div>
+      <div class="hub-grid">
+        <div class="hub-tile" onclick="openModal('mod-apps')">💻 Apps</div>
+        <div class="hub-tile" onclick="openModal('mod-scan')">🔍 Scan QR</div>
+        <div class="hub-tile" onclick="openPage('pg-services')">💳 Services</div>
+        <div class="hub-tile" onclick="toast('🚧 Скоро')">🌐 Web3</div>
+      </div>
+    </div>
+
+    <!-- ПРОФИЛЬ -->
+    <div id="tab-prof" class="tab-view" style="display:none">
+      <div class="prof-head">
+        <img id="prof-photo" src="https://via.placeholder.com/64/eee/999?text=👤" alt="">
+        <div class="prof-info">
+          <h2 id="prof-name">Пользователь</h2>
+          <p id="prof-huid">HUID: —</p>
+          <span class="verified">✓ Верифицирован</span>
+        </div>
+        <div class="qr-btn" onclick="openModal('mod-qr')">🔳</div>
+      </div>
+
+      <div class="token-row">
+        <div class="token-card" onclick="openPage('pg-wallet')">
+          <div class="t-label">QRT</div>
+          <div class="t-val gold" id="mini-qrt">0.01</div>
+        </div>
+        <div class="token-card" onclick="openPage('pg-wallet')">
+          <div class="t-label">QRNC</div>
+          <div class="t-val green" id="mini-qrnc">0</div>
+          <div class="t-tier" id="mini-tier">⚪ Новый</div>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <div class="menu-item" onclick="openPage('pg-services')">
+          <span class="mi-icon">💳</span><span class="mi-text">Services</span><span class="mi-arrow">›</span>
+        </div>
+      </div>
+      <div class="menu-group">
+        <div class="menu-item" onclick="openPage('pg-favorites')">
+          <span class="mi-icon">📦</span><span class="mi-text">Favorites</span><span class="mi-arrow">›</span>
+        </div>
+        <div class="menu-item" onclick="openPage('pg-moments')">
+          <span class="mi-icon">🖼️</span><span class="mi-text">Moments</span><span class="mi-arrow">›</span>
+        </div>
+        <div class="menu-item" onclick="openPage('pg-cards')">
+          <span class="mi-icon">🧧</span><span class="mi-text">Cards & Offers</span>
+          <span class="mi-val" id="card-mini">0.01 QRT</span><span class="mi-arrow">›</span>
+        </div>
+        <div class="menu-item" onclick="openPage('pg-stickers')">
+          <span class="mi-icon">😀</span><span class="mi-text">Stickers</span><span class="mi-arrow">›</span>
+        </div>
+      </div>
+      <div class="menu-group">
+        <div class="menu-item" onclick="openPage('pg-settings')">
+          <span class="mi-icon">⚙️</span><span class="mi-text">Settings</span><span class="mi-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-btn active" id="nav-chat" onclick="switchTab('chat','BSMLH')">💬<span>Chat</span></div>
+    <div class="nav-btn" id="nav-maps" onclick="switchTab('maps','Maps')">🗺️<span>Maps</span></div>
+    <div class="nav-btn" id="nav-hub" onclick="switchTab('hub','HUB')">⚡<span>Hub</span></div>
+    <div class="nav-btn" id="nav-prof" onclick="switchTab('prof','Профиль')">👤<span>Profile</span></div>
+  </nav>
+</div>
+
+<!-- СТРАНИЦЫ -->
+<div id="pg-services" class="page">
+  <div class="page-header"><span class="back" onclick="closePage('pg-services')">‹</span>Services</div>
+  <div class="page-body">
+    <div class="svc-grid">
+      <div class="svc-item" onclick="toast('💸 Платёж')"><div class="svc-ico" style="background:#e8f5e9">💸</div><span>Отправить</span></div>
+      <div class="svc-item" onclick="openModal('mod-qr')"><div class="svc-ico" style="background:#e3f2fd">📲</div><span>Получить</span></div>
+      <div class="svc-item" onclick="openPage('pg-patent')"><div class="svc-ico" style="background:#fff8e1">🛠️</div><span>Патент</span></div>
+      <div class="svc-item" onclick="toast('🌱 Humanity Fund')"><div class="svc-ico" style="background:#f3e5f5">🌱</div><span>Фонд</span></div>
+      <div class="svc-item" onclick="openPage('pg-wallet')"><div class="svc-ico" style="background:#e0f7fa">💰</div><span>Кошелёк</span></div>
+      <div class="svc-item" onclick="toast('🔄 Обмен')"><div class="svc-ico" style="background:#e8eaf6">🔄</div><span>Обмен</span></div>
+      <div class="svc-item" onclick="toast('📊 История')"><div class="svc-ico" style="background:#fce4ec">📊</div><span>История</span></div>
+      <div class="svc-item" onclick="toast('🚧 Скоро')"><div class="svc-ico" style="background:#f5f5f5">➕</div><span>Ещё</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="pg-favorites" class="page">
+  <div class="page-header"><span class="back" onclick="closePage('pg-favorites')">‹</span>Favorites</div>
+  <div class="page-body">
+    <div class="fav-item" onclick="openPage('pg-patent')">🛠️<div><b>Патентная мастерская</b><p>Зафиксируй изобретение</p></div></div>
+    <div class="fav-item" onclick="toast('🌱 Humanity Fund')">🌱<div><b>Humanity Fund</b><p>Твой вклад в будущее</p></div></div>
+    <div class="fav-item" onclick="openPage('pg-wallet')">💰<div><b>Кошелёк QRT</b><p>Баланс и история</p></div></div>
+    <div class="fav-item" onclick="switchTab('maps','Maps');closePage('pg-favorites')">🗺️<div><b>BSMLH Maps</b><p>Найди партнёров рядом</p></div></div>
+  </div>
+</div>
+
+<div id="pg-moments" class="page">
+  <div class="page-header"><span class="back" onclick="closePage('pg-moments')">‹</span>Moments</div>
+  <div class="page-body">
+    <div class="moment">
+      <div class="mo-head"><div class="mo-av">🤖</div><div><b>Alex Chen</b><p>2 часа назад</p></div></div>
+      <div class="mo-img" style="background:linear-gradient(135deg,#667eea,#764ba2)">🌿</div>
+      <div class="mo-text">Зафиксировал изобретение в BSMLH! #Innovation</div>
+      <div class="mo-foot">
+        <span onclick="toast('❤️ Лайк')">❤️ 24</span>
+        <span onclick="toast('💬 Комментарий')">💬 5</span>
+        <span onclick="toast('🔗 Скопировано')">🔗 Поделиться</span>
+      </div>
+    </div>
+    <div class="moment">
+      <div class="mo-head"><div class="mo-av">🌙</div><div><b>Ahmed Al-Rashid</b><p>5 часов назад</p></div></div>
+      <div class="mo-img" style="background:linear-gradient(135deg,#f6851b,#ff4500)">💡</div>
+      <div class="mo-text">+50 QRT за публикацию в открытую науку! 🙏 #HumanityFund</div>
+      <div class="mo-foot">
+        <span onclick="toast('❤️ Лайк')">❤️ 87</span>
+        <span onclick="toast('💬 Комментарий')">💬 12</span>
+        <span onclick="toast('🔗 Скопировано')">🔗 Поделиться</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="pg-cards" class="page">
+  <div class="page-header"><span class="back" onclick="closePage('pg-cards')">‹</span>Cards & Offers</div>
+  <div class="page-body">
+    <div class="card-visual">
+      <div class="cv-top"><span>BSMLH CARD</span><span>🛡️</span></div>
+      <div class="cv-num">•••• •••• •••• 7701</div>
+      <div class="cv-bot"><div><small>ДЕРЖАТЕЛЬ</small><div id="card-name">Пользователь</div></div><div style="text-align:right"><small>QRT</small><div class="cv-bal" id="card-bal">0.01</div></div></div>
+    </div>
+    <div class="offer-item" onclick="toast('🎁 Активировано!')">🎁<div><b>Бонус за первое изобретение</b><p>+10 QRT при фиксации уровня 2</p></div></div>
+    <div class="offer-item" onclick="toast('🤝 Ссылка скопирована')">🤝<div><b>Пригласи друга</b><p>+3 QRT за активного реферала</p></div></div>
+  </div>
+</div>
+
+<div id="pg-stickers" class="page">
+  <div class="page-header"><span class="back" onclick="closePage('pg-stickers')">‹</span>Stickers</div>
+  <div class="page-body">
+    <p class="s-group-title">BSMLH ORIGINAL</p>
+    <div class="sticker-grid">
+      <div onclick="toast('🛡️')">🛡️</div><div onclick="toast('💡')">💡</div>
+      <div onclick="toast('🌱')">🌱</div><div onclick="toast('🔐')">🔐</div>
+      <div onclick="toast('⚡')">⚡</div><div onclick="toast('🌍')">🌍</div>
+      <div onclick="toast('🏆')">🏆</div><div onclick="toast('🤝')">🤝</div>
+    </div>
+    <p class="s-group-title">УРОВНИ РЕПУТАЦИИ</p>
+    <div class="sticker-grid">
+      <div onclick="toast('⚪ Новый')">⚪</div><div onclick="toast('🟢 Активный')">🟢</div>
+      <div onclick="toast('🔵 Надёжный')">🔵</div><div onclick="toast('🟣 Доверенный')">🟣</div>
+      <div onclick="toast('⭐ Легенда')">⭐</div><div onclick="toast('👑 Основатель')">👑</div>
+      <div onclick="toast('🧬 Верифицирован')">🧬</div><div onclick="toast('💎 VIP')">💎</div>
+    </div>
+  </div>
+</div>
+
+<div id="pg-settings" class="page">
+  <div class="page-header"><span class="back" onclick="closePage('pg-settings')">‹</span>Settings</div>
+  <div class="page-body" style="padding:0">
+    <div class="set-prof" onclick="toast('✏️ Редактирование')">
+      <div class="set-av" id="set-av">👤</div>
+      <div><div id="set-name">Пользователь</div><div id="set-huid" style="font-size:13px;color:#888">HUID: —</div></div>
+      <span style="color:#ccc;margin-left:auto">›</span>
+    </div>
+    <div style="padding:15px">
+      <div class="menu-group">
+        <div class="menu-item" onclick="toggleDark()"><span class="mi-icon">🌙</span><span class="mi-text">Тёмная тема</span><span class="mi-val" id="dark-val">Выкл</span><span class="mi-arrow">›</span></div>
+        <div class="menu-item" onclick="toast('🔔 Уведомления')"><span class="mi-icon">🔔</span><span class="mi-text">Уведомления</span><span class="mi-arrow">›</span></div>
+        <div class="menu-item" onclick="toast('🌐 Язык')"><span class="mi-icon">🌐</span><span class="mi-text">Язык</span><span class="mi-val">Русский</span><span class="mi-arrow">›</span></div>
+      </div>
+      <div class="menu-group" style="margin-top:8px">
+        <div class="menu-item" onclick="toast('🔒 Безопасность')"><span class="mi-icon">🔒</span><span class="mi-text">Безопасность</span><span class="mi-arrow">›</span></div>
+        <div class="menu-item" onclick="toast('📱 NFC: NXP NFC424DNA активен')"><span class="mi-icon">📱</span><span class="mi-text">NFC карта</span><span class="mi-val green">Активна</span><span class="mi-arrow">›</span></div>
+      </div>
+      <div class="menu-group" style="margin-top:8px">
+        <div class="menu-item" onclick="toast('BSMLH v9 | ALAI CORPORATION')"><span class="mi-icon">ℹ️</span><span class="mi-text">О приложении</span><span class="mi-val">v9.0</span><span class="mi-arrow">›</span></div>
+      </div>
+      <div style="text-align:center;padding:25px">
+        <button class="btn-exit" onclick="toast('👋 До свидания!')">Выйти</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="pg-patent" class="page">
+  <div class="page-header"><span class="back" onclick="closePage('pg-patent')">‹</span>🛠 Патентная мастерская</div>
+  <div class="page-body">
+    <div id="inv-list"></div>
+    <div class="form-card">
+      <h3>+ Новое изобретение</h3>
+      <input id="inv-title" class="form-inp" placeholder="Название изобретения">
+      <textarea id="inv-desc" class="form-inp" placeholder="Опишите идею своими словами..."></textarea>
+      <input id="inv-ipc" class="form-inp" placeholder="МПК класс (пример: A01G 25/16)">
+      <div class="level-row">
+        <div class="lv sel" id="lv1" onclick="selLv(1)"><b>L1</b><br><small>FREE</small></div>
+        <div class="lv" id="lv2" onclick="selLv(2)"><b>L2</b><br><small>$9.99</small></div>
+        <div class="lv" id="lv3" onclick="selLv(3)"><b>L3</b><br><small>$49.99</small></div>
+      </div>
+      <button class="btn-dark" onclick="fixInv()">📱 ПРИЛОЖИТЬ NFC И ЗАФИКСИРОВАТЬ</button>
+    </div>
+  </div>
+</div>
+
+<div id="pg-wallet" class="page">
+  <div class="page-header"><span class="back" onclick="closePage('pg-wallet')">‹</span>💰 QRT Кошелёк</div>
+  <div class="page-body">
+    <div class="qrt-card">
+      <div class="qc-label">QRT БАЛАНС</div>
+      <div class="qc-amount" id="w-qrt">0.01</div>
+      <div class="qc-sub">Quantum Reward Token</div>
+    </div>
+    <div class="qrnc-card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>QRNC Репутация</span><b id="w-qrnc">0</b></div>
+      <div class="bar-track"><div class="bar-fill" id="qrnc-bar" style="width:0%"></div></div>
+    </div>
+    <div class="hist-card">
+      <h4>История</h4>
+      <div id="hist-list">
+        <div class="hist-row"><span>📱 NFC касание</span><span class="green">+0.01 QRT</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛКИ -->
+<div id="mod-apps" class="modal" onclick="closeModal('mod-apps')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">Apps & Programs</div>
+    <div class="app-grid">
+      <a href="https://wa.me/" target="_blank" class="app-item"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="">WhatsApp</a>
+      <a href="https://t.me/" target="_blank" class="app-item"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="">Telegram</a>
+      <a href="https://youtube.com" target="_blank" class="app-item"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="">YouTube</a>
+      <a href="https://instagram.com" target="_blank" class="app-item"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="">Instagram</a>
+      <a href="https://google.com" target="_blank" class="app-item"><img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="">Google</a>
+      <div class="app-item" onclick="toast('🚧 Скоро')"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828961.png" alt="">Ещё</div>
+    </div>
+    <div class="modal-close" onclick="closeModal('mod-apps')">Закрыть</div>
+  </div>
+</div>
+
+<div id="mod-qr" class="modal" onclick="closeModal('mod-qr')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">Мой QR код</div>
+    <div style="text-align:center">
+      <img id="qr-img" src="" style="width:180px;height:180px;border-radius:12px" alt="QR">
+      <p id="qr-txt" style="margin-top:10px;font-size:13px;color:#888">—</p>
+    </div>
+    <div class="modal-close" onclick="closeModal('mod-qr')">Закрыть</div>
+  </div>
+</div>
+
+<div id="mod-scan" class="modal" onclick="closeModal('mod-scan')">
+  <div style="text-align:center" onclick="event.stopPropagation()">
+    <div class="scan-box"><div class="scan-line"></div></div>
+    <p style="color:#fff;margin-top:15px">Наведите на QR код</p>
+    <p style="color:#888;margin-top:10px;cursor:pointer" onclick="closeModal('mod-scan')">Отмена</p>
+  </div>
+</div>
+
+<div id="toast-el"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
